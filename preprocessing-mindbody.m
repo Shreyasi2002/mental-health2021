@@ -33,8 +33,8 @@ refslice = 0; % reference slice timing in milliseconds
 % for smoothing
 fwhm=[4 4 10]; % the thumb of rules says fwhm should be twice the voxel dimension
 
-% Get a list of all files and folders in func folder.
-files = dir('func');
+% Get a list of all files and folders in data folder.
+files = dir('data');
 % Get a logical vector that tells which is a directory.
 dirFlags = [files.isdir];
 % Extract only those that are directories.
@@ -53,14 +53,14 @@ for sI = 1: length(subNames)
 %% directories 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     
 % define directories    
-str_dir = fullfile(root_dir, subNames{sI},'t1');
-func_dir = fullfile(root_dir, subNames{sI},'rsfmri');
+str_dir = fullfile(root_dir, subNames{sI},'anat');
+func_dir = fullfile(root_dir, subNames{sI},'func');
 
 
 % file select
-f_or = spm_select('FPList',func_dir,'^vol.*\.nii$'); % original functional images
+f_or = spm_select('FPList',func_dir,'^sub.*\.nii$'); % original functional images
 %f = spm_select('FPList',func_dir,'^vol.*\.nii$'); % functional images
-s= spm_select('FPList',str_dir,'^defaced.*\.nii$'); % structural images 
+s= spm_select('FPList',str_dir,'^sub.*\.nii$'); % structural images 
 
 
 
@@ -86,17 +86,18 @@ spm_file_split(f_or);
 
 
 
-% clear matlabbatch
+clear matlabbatch
+
 matlabbatch{1}.cfg_basicio.file_dir.dir_ops.cfg_mkdir.parent = cellstr(func_dir);
 matlabbatch{1}.cfg_basicio.file_dir.dir_ops.cfg_mkdir.name = 'original';
- 
+
 matlabbatch{2}.cfg_basicio.file_dir.file_ops.file_move.files = cellstr(f_or); % remove the original functional file
 matlabbatch{2}.cfg_basicio.file_dir.file_ops.file_move.action.moveto = cellstr(fullfile(func_dir,'original'));
- 
+
 spm_jobman('run',matlabbatch);
 
 
-f = spm_select('FPList',func_dir,'^vol.*\.nii$'); % functional images
+f = spm_select('FPList',func_dir,'^sub.*\.nii$'); % functional images
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% DUMMY SCANS
@@ -118,7 +119,7 @@ spm_jobman('run',matlabbatch);
 
 
 %% Realignment
-f = spm_select('FPList',func_dir,'^vol.*\.nii$'); % functional images
+f = spm_select('FPList',func_dir,'^sub.*\.nii$'); % functional images
 
 clear matlabbatch
 
@@ -148,8 +149,8 @@ rp1(r+1,:)=[];
 sq=rp.^2; % squared head motion parameters
 
 % file select
-rf = spm_select('FPList',func_dir,'^rvol.*\.nii$');% realigned images
-meanf=spm_select('FPList',func_dir,'^meanvol.*\.nii$');% mean image
+rf = spm_select('FPList',func_dir,'^rsub.*\.nii$');% realigned images
+meanf=spm_select('FPList',func_dir,'^meansub.*\.nii$');% mean image
 
 clear matlabbatch
 
@@ -319,7 +320,7 @@ nuis_reg= horzcat(rp,rp1,sq,wm,csf); % friston regressor plus time series from w
 save(fullfile(glm_dir,'nuis_reg.txt' ), 'nuis_reg','-ascii');
 
 % file select
-smooth= spm_select('FPList',func_dir,'^swarvol.*\.nii$'); % select smoothed files
+smooth= spm_select('FPList',func_dir,'^swarsub.*\.nii$'); % select smoothed files
 
 %% Model specification
 matlabbatch{1}.spm.stats.fmri_spec.dir = cellstr(fullfile(GLM2_dir, subNames{sI}));
