@@ -54,7 +54,7 @@ for sI = 1: length(subNames)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     
 % define directories    
 str_dir = fullfile(root_dir,'data',subNames{sI},'anat');
-func_dir = fullfile(root_dir, 'data',subNames{sI},'func');
+func_dir = fullfile(root_dir,'data',subNames{sI},'func');
 
 
 % file select
