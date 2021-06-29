@@ -1,4 +1,4 @@
-% code for running bath analysis of resting state data in SPM12
+% code for running preprocessing analysis of resting state data in SPM12
 
 clear all
 
@@ -53,8 +53,8 @@ for sI = 1: length(subNames)
 %% directories 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     
 % define directories    
-str_dir = fullfile(root_dir, subNames{sI},'anat');
-func_dir = fullfile(root_dir, subNames{sI},'func');
+str_dir = fullfile(root_dir,'data',subNames{sI},'anat');
+func_dir = fullfile(root_dir,'data',subNames{sI},'func');
 
 
 % file select
