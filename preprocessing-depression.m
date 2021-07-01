@@ -40,6 +40,8 @@ dirFlags = [files.isdir];
 % Extract only those that are directories.
 subFolders = files(dirFlags);
 subFolders(ismember( {subFolders.name}, {'.', '..'})) = [];  %remove . and ..
+
+subNames = {0,0};
 for k = 1 : length(subFolders)
 subNames{1,k}=subFolders(k).name;
 end
