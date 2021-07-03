@@ -23,15 +23,17 @@ spm_figure('Create','Graphics','Graphics','on');
 nd=5; % no of dummy scans
 
 % for Slice time correction 
-nslices = 25; 
-tr = 2.5; % in seconds
-ta = 2.4; % ta = tr - (tr/nslices)
-so = [0 100 200 300 400 500 600 700 800 900 1000 1100 1200 1300 1400 1500 1600 1700 1800 1900 2000 2100 2200 2300 2400]; % here we have ebtered slice timing in milliseconds
-refslice = 0; % reference slice timing in milliseconds
+nslices = 64; 
+tr = 1.4; % in seconds
+ta = 1.38; % ta = tr - (tr/nslices) 1.4-1.4/64
+so = [1:2:64 2:2:64]; % slice acquisition order, here interleaved
+%so = [0 100 200 300 400 500 600 700 800 900 1000 1100 1200 1300 1400 1500 1600 1700 1800 1900 2000 2100 2200 2300 2400]; % here we have entered slice timing in milliseconds
+refslice = 1; % reference slice number
+%refslice = 0; % reference slice timing in milliseconds
 
 
 % for smoothing
-fwhm=[4 4 10]; % the thumb of rules says fwhm should be twice the voxel dimension
+fwhm=[4.6 4.6 4.6]; % the thumb of rules says fwhm should be twice the voxel dimension
 
 % Get a list of all files and folders in data folder.
 files = dir('data');
