@@ -558,7 +558,7 @@ n   = 6;    % number of regions
 
 nu  = 1;    % number of inputs. For DCM for CSD we have one input: null
 
-TR  = 2.5;    % volume repetition time (seconds)
+TR  = 1.4;    % volume repetition time (seconds)
 
 TE  = 0.035; % echo time (seconds)
 
@@ -630,7 +630,7 @@ n   = 6;    % number of regions
 
 nu  = 1;    % number of inputs. For DCM for CSD we have one input: null
 
-TR  = 2.5;    % volume repetition time (seconds)
+TR  = 1.4;    % volume repetition time (seconds)
 
 TE  = 0.035; % echo time (seconds)
 
@@ -796,7 +796,7 @@ n   = 5;    % number of regions
 
 nu  = 1;    % number of inputs. For DCM for CSD we have one input: null
 
-TR  = 2.5;    % volume repetition time (seconds)
+TR  = 1.4;    % volume repetition time (seconds)
 
 TE  = 0.035; % echo time (seconds)
 
@@ -868,7 +868,7 @@ n   = 4;    % number of regions
 
 nu  = 1;    % number of inputs. For DCM for CSD we have one input: null
 
-TR  = 2.5;    % volume repetition time (seconds)
+TR  = 1.4;    % volume repetition time (seconds)
 
 TE  = 0.035; % echo time (seconds)
 
