@@ -27,7 +27,7 @@ clear  subFolders
 
 GLM2_dir=fullfile(root_dir,'GLM2');
 
-maskNames={'lrhip.mat','lchip.mat','lV1.mat','lA1.mat','lSSC.mat','lMC.mat','lsth.mat','rrhip.mat','rchip.mat','rV1.mat','rA1.mat','rSSC.mat','rMC.mat','rsth.mat'};
+maskNames={'lrhip.nii','lchip.nii','lV1.nii','lA1.nii','lSSC.nii','lMC.nii','lsth.nii','rrhip.nii','rchip.nii','rV1.nii','rA1.nii','rSSC.nii','rMC.nii','rsth.nii'};
 voiNames={'lrhip','lchip','lV1','lA1','lSSC','lMC','lsth','rrhip','rchip','rV1','rA1','rSSC','rMC','rsth'};
 
 
