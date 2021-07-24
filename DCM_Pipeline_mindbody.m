@@ -560,9 +560,9 @@ nu  = 1;    % number of inputs. For DCM for CSD we have one input: null
 
 TR  = 1.4;    % volume repetition time (seconds)
 
-TE  = 0.035; % echo time (seconds)
+TE  = 0.03; % echo time (seconds)
 
- 
+
 
 % Connectivity matrices
 
@@ -632,7 +632,7 @@ nu  = 1;    % number of inputs. For DCM for CSD we have one input: null
 
 TR  = 1.4;    % volume repetition time (seconds)
 
-TE  = 0.035; % echo time (seconds)
+TE  = 0.03; % echo time (seconds)
 
  
 
@@ -798,7 +798,7 @@ nu  = 1;    % number of inputs. For DCM for CSD we have one input: null
 
 TR  = 1.4;    % volume repetition time (seconds)
 
-TE  = 0.035; % echo time (seconds)
+TE  = 0.03; % echo time (seconds)
 
  
 
@@ -870,7 +870,7 @@ nu  = 1;    % number of inputs. For DCM for CSD we have one input: null
 
 TR  = 1.4;    % volume repetition time (seconds)
 
-TE  = 0.035; % echo time (seconds)
+TE  = 0.03; % echo time (seconds)
 
  
 
