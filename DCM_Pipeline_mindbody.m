@@ -27,7 +27,7 @@ clear  subFolders
 
 GLM2_dir=fullfile(root_dir,'GLM2');
 
-maskNames={'lrhip.mat','lchip.mat','lV1.mat','lA1.mat','lSSC.mat','lMC.mat','lsth.mat','rrhip.mat','rchip.mat','rV1.mat','rA1.mat','rSSC.mat','rMC.mat','rsth.mat'};
+maskNames={'lrhip.nii','lchip.nii','lV1.nii','lA1.nii','lSSC.nii','lMC.nii','lsth.nii','rrhip.nii','rchip.nii','rV1.nii','rA1.nii','rSSC.nii','rMC.nii','rsth.nii'};
 voiNames={'lrhip','lchip','lV1','lA1','lSSC','lMC','lsth','rrhip','rchip','rV1','rA1','rSSC','rMC','rsth'};
 
 
@@ -538,7 +538,481 @@ spm_dcm_peb_review(BMA_R_MODEL2,GCM_R_MODEL2);
 
 
 
+%% define DCMs (model 3)
 
+voiNamesL={'VOI_lrhip_1.mat', 'VOI_lV1_1.mat', 'VOI_lA1_1.mat','VOI_lSSC_1.mat', 'VOI_lMC_1.mat' 'VOI_lsth_1.mat'};
+voiNamesR={'VOI_rrhip_1.mat', 'VOI_rV1_1.mat', 'VOI_rA1_1.mat','VOI_rSSC_1.mat', 'VOI_rMC_1.mat' 'VOI_rsth_1.mat'};   
+
+
+for sI = 1: length(subNames)
+
+cd(fullfile(GLM2_dir, subNames{sI}));
+
+model_name = 'L_MODEL3';
+
+xY         = voiNamesL;
+
+SPM        = 'SPM.mat';
+
+n   = 6;    % number of regions
+
+nu  = 1;    % number of inputs. For DCM for CSD we have one input: null
+
+TR  = 1.4;    % volume repetition time (seconds)
+
+TE  = 0.03; % echo time (seconds)
+
+
+
+% Connectivity matrices
+
+a  = ones(n,n);
+
+b  = zeros(n,n,nu);
+
+c  = zeros(n,nu);
+
+d  = zeros(n,n,0);
+
+ 
+
+% Specify DCM
+
+s = struct();
+
+s.name       = model_name;
+
+s.u          = [];
+
+s.delays     = repmat(TR/2, 1, n)';
+
+s.TE         = TE;
+
+s.nonlinear  = false;
+
+s.two_state  = false;
+
+s.stochastic = false;
+
+s.centre     = false;
+
+s.induced    = 1;       % indicates DCM for CSD
+
+s.a          = a;
+
+s.b          = b;
+
+s.c          = c;
+
+s.d          = d;
+
+ 
+
+DCM = spm_dcm_specify(SPM,xY,s);
+
+
+
+end
+
+clear DCM
+
+for sI = 1: length(subNames)
+
+cd(fullfile(GLM2_dir, subNames{sI}));
+
+model_name = 'R_MODEL3';
+
+xY         = voiNamesR;
+
+SPM        = 'SPM.mat';
+
+n   = 6;    % number of regions
+
+nu  = 1;    % number of inputs. For DCM for CSD we have one input: null
+
+TR  = 1.4;    % volume repetition time (seconds)
+
+TE  = 0.03; % echo time (seconds)
+
+ 
+
+% Connectivity matrices
+
+a  = ones(n,n);
+
+b  = zeros(n,n,nu);
+
+c  = zeros(n,nu);
+
+d  = zeros(n,n,0);
+
+ 
+
+% Specify DCM
+
+s = struct();
+
+s.name       = model_name;
+
+s.u          = [];
+
+s.delays     = repmat(TR/2, 1, n)';
+
+s.TE         = TE;
+
+s.nonlinear  = false;
+
+s.two_state  = false;
+
+s.stochastic = false;
+
+s.centre     = false;
+
+s.induced    = 1;       % indicates DCM for CSD
+
+s.a          = a;
+
+s.b          = b;
+
+s.c          = c;
+
+s.d          = d;
+
+ 
+
+DCM = spm_dcm_specify(SPM,xY,s);
+
+
+
+end
+
+
+clear DCM
+
+%% estimate DCMs
+
+ for h=1: length(subNames) 
+   
+ GCM_L_MODEL3(h,1) = {fullfile(GLM2_dir, subNames{h},'DCM_L_MODEL3.mat')}; 
+ 
+ end
+  
+ 
+ for h=1: length(subNames) 
+   
+ GCM_R_MODEL3(h,1) = {fullfile(GLM2_dir, subNames{h},'DCM_R_MODEL3.mat')}; 
+ 
+ end
+
+use_parfor = true ;
+GCM_L_MODEL3 = spm_dcm_fit(GCM_L_MODEL3);
+save('GCM_L_MODEL3.mat','GCM_L_MODEL3');
+
+
+GCM_R_MODEL3 = spm_dcm_fit(GCM_R_MODEL3);
+save('GCM_R_MODEL3.mat','GCM_R_MODEL3');
+
+
+%% PEB
+
+
+load GCM_L_MODEL3.mat 
+load GCM_R_MODEL3.mat 
+
+
+load BDIAgeSex.mat
+
+%DCM for fMRI diagnostics
+spm_dcm_fmri_check (GCM_L_MODEL3)
+
+BDIAgeSex(:,1)=BDIAgeSex(:,1)-mean(BDIAgeSex(:,1));
+
+BDIAgeSex(:,2)=BDIAgeSex(:,2)-mean(BDIAgeSex(:,2));
+
+M   = struct();
+M.Q = 'all'; 
+
+% Specify design matrix for N subjects. It should start with a constant column
+M.X = horzcat(ones(k,1),BDIAgeSex);
+
+% Choose field
+field = {'A'};
+
+% Estimate model
+
+PEB_L_MODEL3    = spm_dcm_peb(GCM_L_MODEL3,M,field);
+
+save('PEB_L_MODEL3.mat','PEB_L_MODEL3'); 
+
+M   = struct();
+M.Q = 'all'; 
+
+% Specify design matrix for N subjects. It should start with a constant column
+M.X = horzcat(ones(k,1),BDIAgeSex);
+
+% Choose field
+field = {'A'};
+
+% Estimate model
+
+PEB_R_MODEL3    = spm_dcm_peb(GCM_R_MODEL3,M,field);
+
+save('PEB_R_MODEL3.mat','PEB_R_MODEL3'); 
+
+%%BMR & BMA
+clear
+filenames={'PEB_L_MODEL3.mat', 'PEB_R_MODEL3.mat', 'GCM_L_MODEL3.mat', 'GCM_R_MODEL3.mat'};
+
+  
+for kk = 1:numel(filenames)
+    load(filenames{kk})
+end
+
+BMA_L_MODEL3=spm_dcm_peb_bmc(PEB_L_MODEL3);
+save('BMA_L_MODEL3.mat','BMA_L_MODEL3');
+spm_dcm_peb_review(BMA_L_MODEL3,GCM_L_MODEL3);
+
+BMA_R_ExtTrt=spm_dcm_peb_bmc(PEB_R_MODEL3);
+save('BMA_R_MODEL3.mat','BMA_R_MODEL3');
+spm_dcm_peb_review(BMA_R_MODEL3,GCM_R_MODEL3);
+
+%% define DCMs (model 4)
+
+voiNamesL={'VOI_lrhip_1.mat', 'VOI_lV1_1.mat', 'VOI_lA1_1.mat','VOI_lSSC_1.mat', 'VOI_lMC_1.mat' };
+voiNamesR={'VOI_rrhip_1.mat', 'VOI_rV1_1.mat', 'VOI_rA1_1.mat','VOI_rSSC_1.mat', 'VOI_rMC_1.mat' };   
+
+
+for sI = 1: length(subNames)
+
+cd(fullfile(GLM2_dir, subNames{sI}));
+
+model_name = 'L_MODEL4';
+
+xY         = voiNamesL;
+
+SPM        = 'SPM.mat';
+
+n   = 5;    % number of regions
+
+nu  = 1;    % number of inputs. For DCM for CSD we have one input: null
+
+TR  = 1.4;    % volume repetition time (seconds)
+
+TE  = 0.03; % echo time (seconds)
+
+ 
+
+% Connectivity matrices
+
+a  = ones(n,n);
+
+b  = zeros(n,n,nu);
+
+c  = zeros(n,nu);
+
+d  = zeros(n,n,0);
+
+ 
+
+% Specify DCM
+
+s = struct();
+
+s.name       = model_name;
+
+s.u          = [];
+
+s.delays     = repmat(TR/2, 1, n)';
+
+s.TE         = TE;
+
+s.nonlinear  = false;
+
+s.two_state  = false;
+
+s.stochastic = false;
+
+s.centre     = false;
+
+s.induced    = 1;       % indicates DCM for CSD
+
+s.a          = a;
+
+s.b          = b;
+
+s.c          = c;
+
+s.d          = d;
+
+ 
+
+DCM = spm_dcm_specify(SPM,xY,s);
+
+
+
+end
+
+clear DCM
+
+for sI = 1: length(subNames)
+
+cd(fullfile(GLM2_dir, subNames{sI}));
+
+model_name = 'R_MODEL4';
+
+xY         = voiNamesR;
+
+SPM        = 'SPM.mat';
+
+n   = 4;    % number of regions
+
+nu  = 1;    % number of inputs. For DCM for CSD we have one input: null
+
+TR  = 1.4;    % volume repetition time (seconds)
+
+TE  = 0.03; % echo time (seconds)
+
+ 
+
+% Connectivity matrices
+
+a  = ones(n,n);
+
+b  = zeros(n,n,nu);
+
+c  = zeros(n,nu);
+
+d  = zeros(n,n,0);
+
+ 
+
+% Specify DCM
+
+s = struct();
+
+s.name       = model_name;
+
+s.u          = [];
+
+s.delays     = repmat(TR/2, 1, n)';
+
+s.TE         = TE;
+
+s.nonlinear  = false;
+
+s.two_state  = false;
+
+s.stochastic = false;
+
+s.centre     = false;
+
+s.induced    = 1;       % indicates DCM for CSD
+
+s.a          = a;
+
+s.b          = b;
+
+s.c          = c;
+
+s.d          = d;
+
+ 
+
+DCM = spm_dcm_specify(SPM,xY,s);
+
+
+
+end
+
+
+clear DCM
+
+%% estimate DCMs
+
+ for h=1: length(subNames) 
+   
+ GCM_L_MODEL4(h,1) = {fullfile(GLM2_dir, subNames{h},'DCM_L_MODEL4.mat')}; 
+ 
+ end
+  
+ 
+ for h=1: length(subNames) 
+   
+ GCM_R_MODEL4(h,1) = {fullfile(GLM2_dir, subNames{h},'DCM_R_MODEL4.mat')}; 
+ 
+ end
+
+use_parfor = true ;
+GCM_L_MODEL4 = spm_dcm_fit(GCM_L_MODEL4);
+save('GCM_L_MODEL4.mat','GCM_L_MODEL4');
+
+
+GCM_R_MODEL4 = spm_dcm_fit(GCM_R_MODEL4);
+save('GCM_R_MODEL4.mat','GCM_R_MODEL4');
+
+
+%% PEB
+
+
+load GCM_L_MODEL4.mat 
+load GCM_R_MODEL4.mat 
+
+
+load BDIAgeSex.mat
+
+%DCM for fMRI diagnostics
+spm_dcm_fmri_check (GCM_L_MODEL2)
+
+BDIAgeSex(:,1)=BDIAgeSex(:,1)-mean(BDIAgeSex(:,1));
+
+BDIAgeSex(:,2)=BDIAgeSex(:,2)-mean(BDIAgeSex(:,2));
+
+M   = struct();
+M.Q = 'all'; 
+
+% Specify design matrix for N subjects. It should start with a constant column
+M.X = horzcat(ones(k,1),BDIAgeSex);
+
+% Choose field
+field = {'A'};
+
+% Estimate model
+
+PEB_L_MODEL4    = spm_dcm_peb(GCM_L_MODEL4,M,field);
+
+save('PEB_L_MODEL4.mat','PEB_L_MODEL4'); 
+
+M   = struct();
+M.Q = 'all'; 
+
+% Specify design matrix for N subjects. It should start with a constant column
+M.X = horzcat(ones(k,1),BDIAgeSex);
+
+% Choose field
+field = {'A'};
+
+% Estimate model
+
+PEB_R_MODEL4    = spm_dcm_peb(GCM_R_MODEL4,M,field);
+
+save('PEB_R_MODEL4.mat','PEB_R_MODEL4'); 
+
+%%BMR & BMA
+clear
+filenames={'PEB_L_MODEL4.mat', 'PEB_R_MODEL4.mat', 'GCM_L_MODEL4.mat', 'GCM_R_MODEL4.mat'};
+
+  
+for kk = 1:numel(filenames)
+    load(filenames{kk})
+end
+
+BMA_L_MODEL4=spm_dcm_peb_bmc(PEB_L_MODEL4);
+save('BMA_L_MODEL2.mat','BMA_L_MODEL4');
+spm_dcm_peb_review(BMA_L_MODEL4,GCM_L_MODEL4);
+
+BMA_R_ExtTrt=spm_dcm_peb_bmc(PEB_R_MODEL4);
+save('BMA_R_MODEL4.mat','BMA_R_MODEL4');
+spm_dcm_peb_review(BMA_R_MODEL4,GCM_R_MODEL4);
 
 
 %% leave one out cross validation 
